@@ -1,0 +1,12 @@
+streamlit
+langchain
+langchain-ibm
+ibm-watsonx-ai
+ibm_watson_machine_learning
+pandas
+numpy
+chromadb
+tiktoken
+bs4
+matplotlib
+plotly
