@@ -6,6 +6,7 @@ import random
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import seaborn as sns
+import json
 
 # ========================= PAGE CONFIGURATION =========================
 st.set_page_config(page_title="🩺 Health Assistant", layout="wide", page_icon="🩺")
@@ -183,15 +184,26 @@ elif st.session_state.current_section == "treatments":
             Condition: {condition}
             Details: {patient_details}
             Include medications, lifestyle changes, follow-up care, and duration.
-            Format as JSON.
+            Format the output strictly as JSON with the following keys: "medications", "lifestyle_changes", "follow_up_care", "duration".
+            Example JSON format:
+            {{
+                "medications": ["Metformin", "Insulin"],
+                "lifestyle_changes": ["Regular exercise", "Balanced diet"],
+                "follow_up_care": ["Monthly check-ups", "HbA1c tests every 3 months"],
+                "duration": "Ongoing"
+            }}
             """
             response = llm.invoke(prompt)
+            
             try:
-                plan = eval(response.strip())
+                # Safely parse the JSON response
+                plan = json.loads(response.strip())
                 st.session_state.treatment_plan = plan
                 st.json(plan)
-            except Exception as e:
-                st.error(f"Failed to parse treatment plan: {str(e)}")
+            except json.JSONDecodeError as e:
+                st.error(f"Failed to parse treatment plan. The AI response was not valid JSON. Error: {str(e)}")
+                st.write("Raw AI Response:")
+                st.code(response)  # Display raw response for debugging
 
 # ========================= REPORTS PAGE =========================
 elif st.session_state.current_section == "reports":
