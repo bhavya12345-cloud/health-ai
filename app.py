@@ -195,15 +195,21 @@ elif st.session_state.current_section == "treatments":
             """
             response = llm.invoke(prompt)
             
-            try:
-                # Safely parse the JSON response
-                plan = json.loads(response.strip())
-                st.session_state.treatment_plan = plan
-                st.json(plan)
-            except json.JSONDecodeError as e:
-                st.error(f"Failed to parse treatment plan. The AI response was not valid JSON. Error: {str(e)}")
-                st.write("Raw AI Response:")
-                st.code(response)  # Display raw response for debugging
+            # Debugging: Display raw AI response
+            st.write("Raw AI Response:")
+            st.code(response)
+
+            # Check if the response is empty
+            if not response.strip():
+                st.error("The AI response is empty. Please try again.")
+            else:
+                try:
+                    # Safely parse the JSON response
+                    plan = json.loads(response.strip())
+                    st.session_state.treatment_plan = plan
+                    st.json(plan)
+                except json.JSONDecodeError as e:
+                    st.error(f"Failed to parse treatment plan. The AI response was not valid JSON. Error: {str(e)}")
 
 # ========================= REPORTS PAGE =========================
 elif st.session_state.current_section == "reports":
